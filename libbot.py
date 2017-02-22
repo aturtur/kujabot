@@ -28,13 +28,15 @@ class Bot(object):
         print '{}\r\n'.format(cmd)
         self._socket.send('{}\r\n'.format(cmd))
 
-    def chat(self, msg, channel=self._channel):
+    def chat(self, msg, channel=None):
         """Send normal chat message to given channel
 
         Args:
             msg (string): message you wish to send
             channel (string): name of the channel, self._channel by default
         """
+        if channel in [None, 'None', '']:
+            channel = self._channel
         self.send('PRIVMSG #{} :{}'.format(channel, msg))
 
     def connect_network(self, network, port=6667):
@@ -83,6 +85,7 @@ class Bot(object):
         """Sends IRC QUIT command
         """
         self.send("QUIT")
+        self.stop()
 
     def _auto_rejoin(self):
         """If kicked, rejoin the channel
@@ -113,27 +116,26 @@ class Bot(object):
         answer = oracle_response.read()
         self.chat(answer)
 
-    def _dailyhoroscope(self, horoscope):
+    def _daily_horoscope(self, horoscope):
         """Asks a daily horoscope and echoes it to channel
 
         Args:
-            horoscope (string): 
+            horoscope (string):
         """
 
         print horoscope
 
-        horoscopes = ['Oinas','Härkä','Kaksonen','Rapu','Leijona','Neitsyt','Vaaka','Skorpioni','Jousimies','Kauris','Vesimies','Kalat']
-        # Sanitize question for URL
-        horoscope = horoscope.capitalize()        
+        horoscopes = ['oinas','härkä','kaksonen','rapu','leijona','neitsyt','vaaka','skorpioni','jousimies','kauris','vesimies','kalat']
+        horoscope = horoscope.lower()
         if horoscope in horoscopes:
             horoscope_url = 'http://www.iltalehti.fi/horoskooppi/'
             horoscope_request = urllib2.Request(horoscope_url)
             horoscope_response = urllib2.urlopen(horoscope_request)
             content = horoscope_response.read()
-            find = '<p>'+horoscope
+            find = '<p>{}'.format(horoscope)
             splitdata = content.split(find, 1)
             answer = splitdata[1].split('</p>', 1)
-            self.chat(horoscope+answer[0])
+            self.chat(horoscope + answer[0])
         else:
             self.chat('En ymmärtänyt')
 
@@ -157,8 +159,8 @@ class Bot(object):
         if bang == 'k':
             self._oracle(cmd[1:])
 
-        if bang == 'horo':
-            self._dailyhoroscope(cmd[5:])
+        if bang in ['horo', 'horoskooppi', 'horoscope']:
+            self._daily_horoscope(cmd[5:])
 
     def stop(self):
         """FIXME: TODO"""
@@ -189,9 +191,3 @@ class Bot(object):
 
             except IndexError:
                 pass
-
-#TODO: These should be in separate file which imports Bot class
-KUJIS = Bot('kujis_testi3')
-KUJIS.connect_network('irc.quakenet.org')
-KUJIS.join_channel('kujalla')
-KUJIS.start()
