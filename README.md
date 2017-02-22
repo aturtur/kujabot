@@ -1,3 +1,1 @@
-# Photoshop Scripts
-
-My collection of Adobe Photoshop scripts.
+Kujabot is the IRC bot.
