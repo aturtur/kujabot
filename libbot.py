@@ -128,6 +128,7 @@ class Bot(object):
         horoscopes = ['oinas','härkä','kaksonen','rapu','leijona','neitsyt','vaaka','skorpioni','jousimies','kauris','vesimies','kalat']
         horoscope = horoscope.lower()
         if horoscope in horoscopes:
+            horoscope = horoscope.capitalize()
             horoscope_url = 'http://www.iltalehti.fi/horoskooppi/'
             horoscope_request = urllib2.Request(horoscope_url)
             horoscope_response = urllib2.urlopen(horoscope_request)
@@ -146,8 +147,8 @@ class Bot(object):
             cmd (string): command without '!' mark
         """
         bang = cmd.split()[0]
-        print cmd
-        print bang
+        print 'cmd:', cmd
+        print 'bang:', bang
 
         if bang in ['quit', 'die', 'part', 'lopeta', 'kuole']:
             self.chat('Mie meen pois')
@@ -160,7 +161,7 @@ class Bot(object):
             self._oracle(cmd[1:])
 
         if bang in ['horo', 'horoskooppi', 'horoscope']:
-            self._daily_horoscope(cmd[5:])
+            self._daily_horoscope(cmd.split()[1])
 
     def stop(self):
         """FIXME: TODO"""
