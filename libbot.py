@@ -128,11 +128,11 @@ class Bot(object):
         horoscopes = ['oinas','härkä','kaksonen','rapu','leijona','neitsyt','vaaka','skorpioni','jousimies','kauris','vesimies','kalat']
         horoscope = horoscope.lower()
         if horoscope in horoscopes:
-            horoscope = horoscope.capitalize()
             horoscope_url = 'http://www.iltalehti.fi/horoskooppi/'
             horoscope_request = urllib2.Request(horoscope_url)
             horoscope_response = urllib2.urlopen(horoscope_request)
             content = horoscope_response.read()
+            content = content.lower()
             find = '<p>{}'.format(horoscope)
             splitdata = content.split(find, 1)
             answer = splitdata[1].split('</p>', 1)
