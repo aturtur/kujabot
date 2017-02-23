@@ -11,3 +11,7 @@
 - [ ] TV programs API (???)
 - [ ] Links posted by users (database) (options to skip short lived links e.g. dropbox)
 - [ ] Breaking news API (???)
+- [ ] Help function
+- [ ] Track the last time a given nick was in the channel
+- [ ] Queue a message for an offline nick
+- [ ] Wikipedia API
