@@ -1,7 +1,9 @@
 # -*- coding: cp1252 -*-
 """This module implementes IRC bot class"""
+import os
 import socket
 import urllib2
+import random
 
 _BUFFERSIZE = 4096
 
@@ -140,6 +142,33 @@ class Bot(object):
         else:
             self.chat('En ymmärtänyt')
 
+    def _nameday(self):
+        """Echoes name day names to channel
+        """
+        nameday_url = 'http://www.jkauppi.fi/nimipaivat/'
+        nameday_request = urllib2.Request(nameday_url)
+        nameday_response = urllib2.urlopen(nameday_request)
+        content = nameday_response.read()
+        find = ': '
+        splitdata = content.split(find, 1)
+        answer = splitdata[1].split(' <br />', 1)
+
+        self.chat(answer[0])
+
+    def _proverb(self):
+        """Echoes random proverb to channel
+        """
+        script_dir = os.path.dirname(__file__)
+        rel_path = 'data/sananlaskut.dat'
+
+        abs_file_path = os.path.join(script_dir, rel_path)
+        fo = open(abs_file_path)
+        proverbs = fo.read().splitlines()
+        proverb = random.choice(proverbs)
+        fo.close()
+
+        self.chat(proverb)
+
     def _handle_bangs(self, cmd):
         """Handle !cmd commands
 
@@ -162,6 +191,12 @@ class Bot(object):
 
         if bang in ['horo', 'horoskooppi', 'horoscope']:
             self._daily_horoscope(cmd.split()[1])
+        
+        if bang == 'nimpparit':
+            self._nameday()
+
+        if bang == 'sl':
+            self._proverb()
 
     def stop(self):
         """FIXME: TODO"""
