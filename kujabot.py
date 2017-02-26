@@ -2,8 +2,8 @@
 import libbot
 
 def main():
-    kujis = libbot.Bot('testibotti')
-    kujis.connect_network('irc.quakenet.org')
+    kujis = libbot.Bot('kujabot')
+    kujis.connect_to_network('irc.quakenet.org')
     kujis.join_channel('kujalla')
     kujis.start()
 

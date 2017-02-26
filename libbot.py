@@ -40,9 +40,9 @@ class Bot(object):
         """
         if channel in [None, 'None', '']:
             channel = self._channel
-        self.send('PRIVMSG #{} :{}'.format(channel, msg))
+        self.send('PRIVMSG {} :{}'.format(channel, msg))
 
-    def connect_network(self, network, port=6667):
+    def connect_to_network(self, network, port=6667):
         """Open connection to IRC network
 
         Opens socket to given network and port. Sets nickname and user information.
@@ -80,9 +80,13 @@ class Bot(object):
         Args:
             channel (string): name of the channel you with the bot to join
         """
-        self._channel = channel
-        self.send('JOIN #{}'.format(self._channel))
+        mark = '#'
+        if '@' in channel: mark = '@'
+        channel = channel.replace('#', '').replace('@', '')
+        channel = '{}{}'.format(mark, channel)
+        self.send('JOIN {}'.format(channel))
         self.chat('Heippa maailma.', channel)
+        self._channel = channel
 
     def quit(self):
         """Sends IRC QUIT command
