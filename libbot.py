@@ -81,7 +81,8 @@ class Bot(object):
             channel (string): name of the channel you with the bot to join
         """
         mark = '#'
-        if '@' in channel: mark = '@'
+        if '@' in channel:
+            mark = '@'
         channel = channel.replace('#', '').replace('@', '')
         channel = '{}{}'.format(mark, channel)
         self.send('JOIN {}'.format(channel))
@@ -129,7 +130,8 @@ class Bot(object):
         Args:
             horoscope (string):
         """
-        horoscopes = ['oinas', 'härkä', 'kaksonen', 'rapu', 'leijona', 'neitsyt', 'vaaka', 'skorpioni', 'jousimies', 'kauris', 'vesimies', 'kalat']
+        horoscopes = ['oinas', 'härkä', 'kaksonen', 'rapu', 'leijona', 'neitsyt', \
+                'vaaka', 'skorpioni', 'jousimies', 'kauris', 'vesimies', 'kalat']
         horoscope = horoscope.lower()
         if horoscope in horoscopes:
             horoscope_url = 'http://www.iltalehti.fi/horoskooppi/'
@@ -141,8 +143,8 @@ class Bot(object):
             answer = splitdata[1].split('</p>', 1)
             result = ""
             sentence = answer[0].split(". ")
-            for x in sentence:
-                result += x[0].upper() + x[1:] + '. '
+            for part in sentence:
+                result += part[0].upper() + part[1:] + '. '
             self.chat(horoscope.capitalize() + result[:-2])
         else:
             self.chat('En ymmärtänyt')
@@ -167,8 +169,8 @@ class Bot(object):
         rel_path = 'data/sananlaskut.dat'
 
         abs_file_path = os.path.join(script_dir, rel_path)
-        with open(abs_file_path) as fo:
-            proverbs = fo.read().splitlines()
+        with open(abs_file_path) as proverb_file:
+            proverbs = proverb_file.read().splitlines()
             proverb = random.choice(proverbs)
 
         self.chat(proverb)
@@ -203,7 +205,8 @@ class Bot(object):
             self._proverb()
 
     def stop(self):
-        """FIXME: TODO"""
+        """kills the bot
+        """
         sys.exit(0)
 
     def start(self):
