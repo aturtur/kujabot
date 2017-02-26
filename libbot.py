@@ -1,6 +1,7 @@
 # -*- coding: cp1252 -*-
 """This module implementes IRC bot class"""
 import os
+import sys
 import socket
 import urllib2
 import random
@@ -124,7 +125,7 @@ class Bot(object):
         Args:
             horoscope (string):
         """
-        horoscopes = ['oinas','härkä','kaksonen','rapu','leijona','neitsyt','vaaka','skorpioni','jousimies','kauris','vesimies','kalat']
+        horoscopes = ['oinas', 'härkä', 'kaksonen', 'rapu', 'leijona', 'neitsyt', 'vaaka', 'skorpioni', 'jousimies', 'kauris', 'vesimies', 'kalat']
         horoscope = horoscope.lower()
         if horoscope in horoscopes:
             horoscope_url = 'http://www.iltalehti.fi/horoskooppi/'
@@ -134,7 +135,7 @@ class Bot(object):
             find = '<p>{}'.format(horoscope)
             splitdata = content.split(find, 1)
             answer = splitdata[1].split('</p>', 1)
-            result = ""    
+            result = ""
             sentence = answer[0].split(". ")
             for x in sentence:
                 result += x[0].upper() + x[1:] + '. '
@@ -162,10 +163,9 @@ class Bot(object):
         rel_path = 'data/sananlaskut.dat'
 
         abs_file_path = os.path.join(script_dir, rel_path)
-        fo = open(abs_file_path)
-        proverbs = fo.read().splitlines()
-        proverb = random.choice(proverbs)
-        fo.close()
+        with open(abs_file_path) as fo:
+            proverbs = fo.read().splitlines()
+            proverb = random.choice(proverbs)
 
         self.chat(proverb)
 
@@ -191,16 +191,16 @@ class Bot(object):
 
         if bang in ['horo', 'horoskooppi', 'horoscope']:
             self._daily_horoscope(cmd.split()[1])
-        
-        if bang == 'nimpparit':
+
+        if bang in ['nimpparit', 'nimipäivät', 'nimipäivä', 'nimppari']:
             self._nameday()
 
-        if bang == 'sl':
+        if bang in ['sl', 'sananlaskut', 'sanonnat', 'proverb']:
             self._proverb()
 
     def stop(self):
         """FIXME: TODO"""
-        pass
+        sys.exit(0)
 
     def start(self):
         """Start listening for incoming messages and handle them
