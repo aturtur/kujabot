@@ -1,10 +1,8 @@
 # -*- coding: cp1252 -*-
 """This module implementes IRC bot class"""
-import os
 import sys
 import socket
-import urllib2
-import random
+from handlers import *
 
 _BUFFERSIZE = 4096
 
@@ -109,72 +107,6 @@ class Bot(object):
         timestamp = cmd.split()[1]
         self.send('PONG {}'.format(timestamp))
 
-    def _oracle(self, question):
-        """Asks a question from oracle and echoes it to channel
-
-        Args:
-            question (string): question to be asked from the oracle
-        """
-        # Sanitize question for URL
-        clean_question = urllib2.quote(question)
-        orcale_url = 'http://www.lintukoto.net/viihde/oraakkeli/index.php?kysymys={}&html'\
-                .format(clean_question)
-        oracle_request = urllib2.Request(orcale_url)
-        oracle_response = urllib2.urlopen(oracle_request)
-        answer = oracle_response.read()
-        self.chat(answer)
-
-    def _daily_horoscope(self, horoscope):
-        """Asks a daily horoscope and echoes it to channel
-
-        Args:
-            horoscope (string):
-        """
-        horoscopes = ['oinas', 'härkä', 'kaksonen', 'rapu', 'leijona', 'neitsyt', \
-                'vaaka', 'skorpioni', 'jousimies', 'kauris', 'vesimies', 'kalat']
-        horoscope = horoscope.lower()
-        if horoscope in horoscopes:
-            horoscope_url = 'http://www.iltalehti.fi/horoskooppi/'
-            horoscope_request = urllib2.Request(horoscope_url)
-            horoscope_response = urllib2.urlopen(horoscope_request)
-            content = horoscope_response.read().lower()
-            find = '<p>{}'.format(horoscope)
-            splitdata = content.split(find, 1)
-            answer = splitdata[1].split('</p>', 1)
-            result = ""
-            sentence = answer[0].split(". ")
-            for part in sentence:
-                result += part[0].upper() + part[1:] + '. '
-            self.chat(horoscope.capitalize() + result[:-2])
-        else:
-            self.chat('En ymmärtänyt')
-
-    def _nameday(self):
-        """Echoes name day names to channel
-        """
-        nameday_url = 'http://www.jkauppi.fi/nimipaivat/'
-        nameday_request = urllib2.Request(nameday_url)
-        nameday_response = urllib2.urlopen(nameday_request)
-        content = nameday_response.read()
-        find = ': '
-        splitdata = content.split(find, 1)
-        answer = splitdata[1].split(' <br />', 1)
-
-        self.chat(answer[0])
-
-    def _proverb(self):
-        """Echoes random proverb to channel
-        """
-        script_dir = os.path.dirname(__file__)
-        rel_path = 'data/sananlaskut.dat'
-
-        abs_file_path = os.path.join(script_dir, rel_path)
-        with open(abs_file_path) as proverb_file:
-            proverbs = proverb_file.read().splitlines()
-            proverb = random.choice(proverbs)
-
-        self.chat(proverb)
-
     def _handle_bangs(self, cmd):
         """Handle !cmd commands
 
@@ -184,25 +116,29 @@ class Bot(object):
         bang = cmd.split()[0]
         print 'cmd:', cmd
         print 'bang:', bang
+        msg = None
 
         if bang in ['quit', 'die', 'part', 'lopeta', 'kuole']:
             self.chat('Mie meen pois')
             self.quit()
 
         if bang in ['moi', 'terve', 'hei', 'hi', 'hello']:
-            self.chat('Moro')
+            msg = say_hello()
 
-        if bang == 'k':
-            self._oracle(cmd[1:])
+        if bang in ['k', 'q', 'kysymys', 'question', 'oracle', 'ennuste', 'enustus', 'prediction']:
+            msg = get_prediction(cmd[1:])
 
         if bang in ['horo', 'horoskooppi', 'horoscope']:
-            self._daily_horoscope(cmd.split()[1])
+            msg = get_horoscope(cmd.split()[1])
 
         if bang in ['nimpparit', 'nimipäivät', 'nimipäivä', 'nimppari']:
-            self._nameday()
+            msg = get_nameday()
 
-        if bang in ['sl', 'sananlaskut', 'sanonnat', 'proverb']:
-            self._proverb()
+        if bang in ['sl', 'sananlasku', 'sananlaskut', 'sanonta', 'sanonnat', 'proverb']:
+            msg = get_proverb()
+
+        if msg is not None:
+            self.chat(msg)
 
     def stop(self):
         """kills the bot
